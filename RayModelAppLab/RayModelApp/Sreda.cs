@@ -8,38 +8,22 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Windows.Media.Media3D;
 
 namespace RayModelApp
 {
 
     public class Sreda
     {
-        [Description("Number of irregularity")]
-        // public int NerCount { get; set; }
-        public int NerCount
-        {
-            get { return irList.Count; }
-        } 
-        [Description("Number of sound profiles")]
-        public int ProfileCount 
-        {
-            get 
-            {
-                return Profiles.Count;
-            }
-        }
-        [Description("Number of sources")]
-        public int SourceCount
-        { 
-            get { return Sources.Count; }
-        }
+        [Category("Water area")]
         [Description("Length of water area")]
         public int Length { get; set; }
+        [Category("Water area")]
         [Description("Width of water area")]
         public int Width { get; set; }
-        [Description("Depth of water area")]
-        [DefaultValue(200)]
         private int depth;
+        [Category("Water area")]
+        [Description("Depth of water area")]
         public int Depth 
         { get 
             { 
@@ -55,47 +39,78 @@ namespace RayModelApp
                 }
             }
         }
-        [Description("Grid step")]
-        public int Step { get; set; }
+        private double up;
+        [Category("Coefficients")]
+        [Description("The attenuation factor of the signal when reflected from the surface")]
+        [DefaultValue(0.9)]
+        public double Up
+        {
+            get { return up; }
+            set
+            {
+                double v100 = 100 * value;
+                if (Math.Abs(v100 - Math.Truncate(v100)) > 0)
+                    MessageBox.Show("Value resolution must be 0.01", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                else
+                    if (value < 0 || value > 1)
+                    MessageBox.Show("Value must be between 0 and 1", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                else
+                    up = value;
+            }
+        }
+        private double bottom;
+        [Category("Coefficients")]
+        [Description("The attenuation factor of the signal when reflected from the bottom")]
+        [DefaultValue(0.7)]
+        public double Bottom
+        {
+            get { return bottom; }
+            set
+            {
+                double v100 = 100 * value;
+                if (Math.Abs(v100 - Math.Truncate(v100)) > 0)
+                    MessageBox.Show("Value resolution must be 0.01", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                else
+                    if (value < 0 || value > 1)
+                    MessageBox.Show("Value must be between 0 and 1", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                else
+                    bottom = value;
+            }
+        }
+
         [Description("Depth of receiver")]
         public int ReceiverDepth { get; set; }
-
         
-       
-        public List<Irregularity> irList { get; set; }
-        public List<Source> Sources { get; set; }
-        public List<Profile> Profiles { get; set; }
+        [Description("Profile")]
+        public List<ProfilePoint> Profile { get; set; }
+        [Description("Traectory")]
+        public List<Point3D> Traectory { get; set; }
 
+        [Category("Source")]
+        [Description("Source Frequency")]
+        public float  Frequency { get; set; }
+        [Category("Source")]
+        [Description("Source Phase")]
+        [DefaultValue(0.0)]
+        public float Phase { get; set; }
         public void Save(string filename)
         {
             using (TextWriter tw = File.CreateText(filename))
             {
                 StringBuilder sb = new StringBuilder();
-                sb.Append(string.Format("{0},", NerCount));
-                sb.Append(string.Format("{0},", ProfileCount));
-                sb.Append(string.Format("{0},", SourceCount));
                 sb.Append(string.Format("{0},", Length));
                 sb.Append(string.Format("{0},", Width));
                 sb.Append(string.Format("{0},", Depth));
-                sb.Append(string.Format("{0},", Step));
                 sb.Append(string.Format("{0}", ReceiverDepth));
                 tw.WriteLine(sb.ToString());
-                Console.WriteLine(irList.Count);
-                foreach (Irregularity ir in irList)
-                    tw.WriteLine(ir.ToString());
-                foreach(Profile p in Profiles)
-                    tw.WriteLine(p.ToString());
-                foreach (Source src in Sources)
-                    tw.WriteLine(src.ToString());
                 tw.Close();
             }
         }
 
         public Sreda()
         {
-            this.irList = new List<Irregularity>();
-            this.Sources = new List<Source>();
-            this.Profiles = new List<Profile>();
+            Traectory = new List<Point3D>();
+            Profile = new List<ProfilePoint>();
         }
         public void Load(string filename)
         {
@@ -109,81 +124,11 @@ namespace RayModelApp
                 nSources = ushort.Parse(pars[2]);
                 Length = int.Parse(pars[3]);
                 Width = int.Parse(pars[4]);
-                Depth = int.Parse(pars[5]);
-                Step = int.Parse(pars[6]);
+                Depth = int.Parse(pars[5]);                
                 ReceiverDepth = int.Parse(pars[7]);
-                #region Irregularity
-                irList.Clear();
-                for (int i = 0; i < nNer; i++)
-                    irList.Add(new Irregularity(tr.ReadLine()));
-                #endregion
-                #region Profiles
-                Profiles.Clear();
-                for (int i = 0; i < nProf; i++)
-                    Profiles.Add(new Profile());
-                #endregion
-                #region Sources
-                Sources.Clear();
-                for (int i = 0; i < nSources; i++)
-                    Sources.Add(new Source(tr.ReadLine()));
-                #endregion
                 tr.Close();
             }
         }
 
-    }
-
-    public class IrregularityCollectionEditor : CollectionEditor
-    {
-        public IrregularityCollectionEditor(Type type)
-            : base(type)
-        {
-        }
-
-        protected override bool CanSelectMultipleInstances()
-        {
-            return false;
-        }
-
-        protected override Type CreateCollectionItemType()
-        {
-            return typeof(Irregularity);
-        }
-    }
-
-    public class SourceCollectionEditor : CollectionEditor
-    {
-        public SourceCollectionEditor(Type type)
-            : base(type)
-        {
-        }
-
-        protected override bool CanSelectMultipleInstances()
-        {
-            return false;
-        }
-
-        protected override Type CreateCollectionItemType()
-        {
-            return typeof(Source);
-        }
-    }
-
-    public class ProfileCollectionEditor : CollectionEditor
-    {
-        public ProfileCollectionEditor(Type type)
-            : base(type)
-        {
-        }
-
-        protected override bool CanSelectMultipleInstances()
-        {
-            return false;
-        }
-
-        protected override Type CreateCollectionItemType()
-        {
-            return typeof(Profile);
-        }
     }
 }
