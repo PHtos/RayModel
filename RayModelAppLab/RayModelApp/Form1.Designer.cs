@@ -85,6 +85,7 @@
             // 
             // menuStrip1
             // 
+            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.FileToolStripMenuItem,
             this.componentsToolStripMenuItem});
@@ -180,6 +181,7 @@
             // 
             // statusStrip1
             // 
+            this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.stCoord,
             this.toolStripProgressBar1});
@@ -242,7 +244,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.GLC);
             this.splitContainer1.Size = new System.Drawing.Size(749, 495);
-            this.splitContainer1.SplitterDistance = 220;
+            this.splitContainer1.SplitterDistance = 218;
             this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 3;
             // 
@@ -264,7 +266,7 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 37.5F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 70F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(220, 495);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(218, 495);
             this.tableLayoutPanel2.TabIndex = 5;
             // 
             // pg1
@@ -277,11 +279,12 @@
             this.pg1.Margin = new System.Windows.Forms.Padding(2);
             this.pg1.Name = "pg1";
             this.pg1.PropertySort = System.Windows.Forms.PropertySort.NoSort;
-            this.pg1.Size = new System.Drawing.Size(216, 249);
+            this.pg1.Size = new System.Drawing.Size(214, 249);
             this.pg1.TabIndex = 8;
             // 
             // contextMenuStrip1
             // 
+            this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.cmiAquatories,
             this.cmiTraectories,
@@ -330,7 +333,7 @@
             "2",
             "5",
             "10"});
-            this.cbTR.Location = new System.Drawing.Point(112, 476);
+            this.cbTR.Location = new System.Drawing.Point(111, 476);
             this.cbTR.Margin = new System.Windows.Forms.Padding(2);
             this.cbTR.Name = "cbTR";
             this.cbTR.Size = new System.Drawing.Size(76, 21);
@@ -345,8 +348,9 @@
             this.dgw.Location = new System.Drawing.Point(2, 255);
             this.dgw.Margin = new System.Windows.Forms.Padding(2);
             this.dgw.Name = "dgw";
+            this.dgw.RowHeadersWidth = 51;
             this.dgw.RowTemplate.Height = 24;
-            this.dgw.Size = new System.Drawing.Size(216, 147);
+            this.dgw.Size = new System.Drawing.Size(214, 147);
             this.dgw.TabIndex = 0;
             this.dgw.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dgw_CellValidating);
             // 
@@ -358,7 +362,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(3, 407);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(214, 64);
+            this.panel1.Size = new System.Drawing.Size(212, 64);
             this.panel1.TabIndex = 7;
             // 
             // bArtRun
@@ -374,7 +378,7 @@
             // btnMakePoints
             // 
             this.btnMakePoints.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnMakePoints.Location = new System.Drawing.Point(2, 20);
+            this.btnMakePoints.Location = new System.Drawing.Point(1, 21);
             this.btnMakePoints.Margin = new System.Windows.Forms.Padding(2);
             this.btnMakePoints.Name = "btnMakePoints";
             this.btnMakePoints.Size = new System.Drawing.Size(56, 24);
@@ -388,8 +392,9 @@
             this.GLC.BackColor = System.Drawing.Color.Black;
             this.GLC.Dock = System.Windows.Forms.DockStyle.Fill;
             this.GLC.Location = new System.Drawing.Point(0, 0);
+            this.GLC.Margin = new System.Windows.Forms.Padding(4);
             this.GLC.Name = "GLC";
-            this.GLC.Size = new System.Drawing.Size(526, 495);
+            this.GLC.Size = new System.Drawing.Size(528, 495);
             this.GLC.TabIndex = 0;
             this.GLC.VSync = false;
             this.GLC.Load += new System.EventHandler(this.glC_Load);

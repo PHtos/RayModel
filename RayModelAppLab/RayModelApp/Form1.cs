@@ -14,7 +14,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using mc3vray;
+// HACK: using mc3vray;
 using System.Configuration;
 
 namespace RayModelApp
@@ -578,7 +578,7 @@ namespace RayModelApp
             double hobj;
             double lobj;
             Point4D p4d;
-            GObject go = new GObject();
+            //GObject go = new GObject();
             while (!queue.IsEmpty)
             {
                 queue.TryDequeue(out p4d);
@@ -598,14 +598,18 @@ namespace RayModelApp
                     //object result = go.calcAmp(hgas, hobj, lobj, kP, kD, omega, c, h);
                     double[] tR;
                     double[] aR;
-                    go.calcAmp(hgas, hobj, lobj, kP, kD, omega, c, h, out tR, out aR);
+
+                    // HACK: go.calcAmp(hgas, hobj, lobj, kP, kD, omega, c, h, out tR, out aR);
+
                     lock (locker)
                     {
                         //pnts.Add(new Pnt() { x = p4d.W, y = (double)result });
                         try
                         {
-                            Console.WriteLine(string.Format("amp: {0}", aR[0]));
-                            pnts.Add(new Pnt() { x = p4d.W, y = aR[0] });
+                            // HACK: Console.WriteLine(string.Format("amp: {0}", aR[0]));
+                            // HACK: pnts.Add(new Pnt() { x = p4d.W, y = aR[0] });
+
+
                             //Application.OpenForms[0].Text = queue.Count.ToString();
                         }
                         catch (Exception ex)
@@ -701,19 +705,19 @@ namespace RayModelApp
             double kP = 0.9;
             double kD = 0.7;
             double omega = 3.7;
-            mc3vray.GObject gObj = new GObject();
+            // HACK: mc3vray.GObject gObj = new GObject();
             List<double> timeRays = new List<double>();
             List<double> ampRays = new List<double>();
             for (int i = 0; i < 1401; i++)
             {
                 double[] tR;
                 double[] aR;
-                gObj.calcAmp(hgas, hobj[i], lobj[i], kP, kD, omega, c, h, out tR, out aR);
-                for (int j = 0; j < tR.Length; j++)
-                {
-                    timeRays.Add(tR[j] + time[i]);
-                    ampRays.Add(aR[j]);
-                }
+                // HACK: gObj.calcAmp(hgas, hobj[i], lobj[i], kP, kD, omega, c, h, out tR, out aR);
+                // HACK: for (int j = 0; j < tR.Length; j++)
+                // HACK: {
+                // HACK: timeRays.Add(tR[j] + time[i]);
+                // HACK: ampRays.Add(aR[j]);
+                // HACK: }
             }
             for (int minT = 0; minT < timeRays.Count - 1; minT++)
             {

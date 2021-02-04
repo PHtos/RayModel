@@ -170,6 +170,7 @@ namespace mc3vray
 
                     while (Lobj > L)
                     {
+                        /*
                         S.Layer_000_090(    BgnAngl,    // початковий кут
                                             H,          // спочатку початкова глибина джерела звуку, потім вузлові точки по глибині
                                             C,          // спочатку початкова швидкість звуку джерела, потім вузлові точки по глибині
@@ -178,15 +179,15 @@ namespace mc3vray
                             out X,          // радіус кола
                             out R,          // центр кола 
                             out j);         // номер поточного точки водного прошарку
-
+                        */
                         L++;
 
                        // double lri = (Math.Abs(rFi * Math.Cos(eFi)) > Math.Abs(rFi * Math.Cos(bFi))) ? Math.Abs(rFi * (fi - bFi)) : Math.Abs(rFi * (fi - eFi));
 
-                        i = j;
-                        H = Hz[j];
-                        C = Cz[j];
-                        BgnAngl = EndAngl;
+                        //i = j;
+                        //H = Hz[j];
+                        //C = Cz[j];
+                        //BgnAngl = EndAngl;
                     }
 
                     Angel += dAngel;
