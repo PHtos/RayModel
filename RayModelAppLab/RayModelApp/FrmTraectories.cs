@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
@@ -15,9 +10,11 @@ namespace RayModelApp
     {
         private BindingSource bs;
         public List<Point3D> points;
+
         public FrmTraectories()
         {
             InitializeComponent();
+
             string[] fs = Directory.GetFiles(Environment.CurrentDirectory, "*.tra");
             listBox1.Items.Clear();
             foreach (string s in fs)
@@ -27,8 +24,8 @@ namespace RayModelApp
             bs.DataSource = fs;
             bindingNavigator1.BindingSource = bs;
             bs.CurrentItemChanged += Bs_CurrentItemChanged;
-            points = new List<Point3D>();
 
+            points = new List<Point3D>();
         }
 
         private void Bs_CurrentItemChanged(object sender, EventArgs e)
@@ -47,12 +44,15 @@ namespace RayModelApp
                 while ((line = tr.ReadLine()) != null)
                 {
                     Console.WriteLine(line);
+
                     int x1, y1, z1;
                     string[] vals = line.Split(';');
                     int.TryParse(vals[0], out x1);
                     int.TryParse(vals[1], out y1);
                     int.TryParse(vals[2], out z1);
+
                     chart1.Series[0].Points.AddXY(x1, y1);
+
                     points.Add(new Point3D() { X = x1, Y = y1, Z = z1 });
                 }
             }

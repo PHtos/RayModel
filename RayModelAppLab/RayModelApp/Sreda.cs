@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing.Design;
-using System.ComponentModel.Design;
-using System.Reflection;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Windows.Media.Media3D;
@@ -15,53 +11,70 @@ namespace RayModelApp
 
     public class Sreda
     {
+        #region Water area
+
         [Category("Water area")]
         [Description("Length of water area")]
         public int Length { get; set; }
+
         [Category("Water area")]
         [Description("Width of water area")]
         public int Width { get; set; }
+
         private int depth;
         [Category("Water area")]
         [Description("Depth of water area")]
         public int Depth 
-        { get 
+        {
+            get 
             { 
                 return depth; 
             }
             set 
             {
-                if ((value < 50 || value > 800))
-                    MessageBox.Show("Depth is invalid", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                if (value > 40 && value < 800)
+                    depth = value;
                 else
                 {
-                    depth = value;
+                    if (value < 40)
+                        MessageBox.Show("Depth is less than 40 m", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    else
+                        MessageBox.Show("Depth is more than 800 m", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
             }
         }
+
+        #endregion
+
+
+        #region Coefficients
+
         private double up;
         [Category("Coefficients")]
         [Description("The attenuation factor of the signal when reflected from the surface")]
-        [DefaultValue(0.9)]
         public double Up
         {
-            get { return up; }
+            get
+            {
+                return up;
+            }
             set
             {
                 double v100 = 100 * value;
+
                 if (Math.Abs(v100 - Math.Truncate(v100)) > 0)
                     MessageBox.Show("Value resolution must be 0.01", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 else
                     if (value < 0 || value > 1)
-                    MessageBox.Show("Value must be between 0 and 1", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        MessageBox.Show("Value must be between 0 and 1", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 else
                     up = value;
             }
         }
+
         private double bottom;
         [Category("Coefficients")]
         [Description("The attenuation factor of the signal when reflected from the bottom")]
-        [DefaultValue(0.7)]
         public double Bottom
         {
             get { return bottom; }
@@ -78,21 +91,29 @@ namespace RayModelApp
             }
         }
 
-        [Description("Depth of receiver")]
-        public int ReceiverDepth { get; set; }
-        
-        [Description("Profile")]
-        public List<ProfilePoint> Profile { get; set; }
-        [Description("Traectory")]
-        public List<Point3D> Traectory { get; set; }
+        #endregion
+
+
+        #region Other
 
         [Category("Source")]
         [Description("Source Frequency")]
-        public float  Frequency { get; set; }
+        public float Frequency { get; set; }
+
         [Category("Source")]
         [Description("Source Phase")]
-        [DefaultValue(0.0)]
         public float Phase { get; set; }
+
+        [Category("Source")]
+        [Description("Depth of receiver")]
+        public int ReceiverDepth { get; set; }
+
+        [Description("Profile")]
+        public List<ProfilePoint> Profile { get; set; }
+
+        [Description("Traectory")]
+        public List<Point3D> Traectory { get; set; }
+
         public void Save(string filename)
         {
             using (TextWriter tw = File.CreateText(filename))
@@ -107,11 +128,15 @@ namespace RayModelApp
             }
         }
 
+        #endregion
+
+
         public Sreda()
         {
             Traectory = new List<Point3D>();
             Profile = new List<ProfilePoint>();
         }
+
         public void Load(string filename)
         {
             using (TextReader tr = File.OpenText(filename))

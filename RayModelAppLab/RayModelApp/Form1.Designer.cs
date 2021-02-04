@@ -40,8 +40,6 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.выходToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.componentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aquatoriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.objectsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.trajectoriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.profilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -147,25 +145,11 @@
             // componentsToolStripMenuItem
             // 
             this.componentsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aquatoriesToolStripMenuItem,
-            this.objectsToolStripMenuItem,
             this.trajectoriesToolStripMenuItem,
             this.profilesToolStripMenuItem});
             this.componentsToolStripMenuItem.Name = "componentsToolStripMenuItem";
             this.componentsToolStripMenuItem.Size = new System.Drawing.Size(88, 20);
             this.componentsToolStripMenuItem.Text = "Components";
-            // 
-            // aquatoriesToolStripMenuItem
-            // 
-            this.aquatoriesToolStripMenuItem.Name = "aquatoriesToolStripMenuItem";
-            this.aquatoriesToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
-            this.aquatoriesToolStripMenuItem.Text = "Aquatories";
-            // 
-            // objectsToolStripMenuItem
-            // 
-            this.objectsToolStripMenuItem.Name = "objectsToolStripMenuItem";
-            this.objectsToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
-            this.objectsToolStripMenuItem.Text = "Objects";
             // 
             // trajectoriesToolStripMenuItem
             // 
@@ -290,26 +274,24 @@
             this.cmiTraectories,
             this.cmiProfiles});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(132, 70);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(131, 70);
             // 
             // cmiAquatories
             // 
             this.cmiAquatories.Name = "cmiAquatories";
-            this.cmiAquatories.Size = new System.Drawing.Size(131, 22);
-            this.cmiAquatories.Text = "Aquatories";
-            this.cmiAquatories.Click += new System.EventHandler(this.cmiAquatories_Click);
+            this.cmiAquatories.Size = new System.Drawing.Size(130, 22);
             // 
             // cmiTraectories
             // 
             this.cmiTraectories.Name = "cmiTraectories";
-            this.cmiTraectories.Size = new System.Drawing.Size(131, 22);
+            this.cmiTraectories.Size = new System.Drawing.Size(130, 22);
             this.cmiTraectories.Text = "Traectories";
             this.cmiTraectories.Click += new System.EventHandler(this.cmiTraectories_Click);
             // 
             // cmiProfiles
             // 
             this.cmiProfiles.Name = "cmiProfiles";
-            this.cmiProfiles.Size = new System.Drawing.Size(131, 22);
+            this.cmiProfiles.Size = new System.Drawing.Size(130, 22);
             this.cmiProfiles.Text = "Profiles";
             this.cmiProfiles.Click += new System.EventHandler(this.cmiProfiles_Click);
             // 
@@ -385,7 +367,7 @@
             this.btnMakePoints.TabIndex = 9;
             this.btnMakePoints.Text = "Make";
             this.btnMakePoints.UseVisualStyleBackColor = true;
-            this.btnMakePoints.Click += new System.EventHandler(this.btnMakePoints_Click_1);
+            this.btnMakePoints.Click += new System.EventHandler(this.btnMakePoints_Click);
             // 
             // GLC
             // 
@@ -443,6 +425,8 @@
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "RayForm";
             this.Text = "Ray model";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.Load += new System.EventHandler(this.RayForm_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
@@ -490,8 +474,6 @@
         private System.Windows.Forms.ComboBox cbTR;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ToolStripMenuItem componentsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem aquatoriesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem objectsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem trajectoriesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem profilesToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;

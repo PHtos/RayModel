@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 namespace RayModelApp
@@ -11,13 +9,17 @@ namespace RayModelApp
     {
         [Description("Depth")]
         public int z { get; set; }
+
         [Description("Sound velocity")]
         public float c { get; set; }
+
         [Description("Temperature")]
         public float t { get; set; }
+
         [Description("Salinity")]
         public float p { get; set; }
     }
+
     public class Profile
     {
         public int x { get; set; }
@@ -33,6 +35,7 @@ namespace RayModelApp
         {
             Points = new List<ProfilePoint>();
             string[] ars = line.Split(',');
+
             x = int.Parse(ars[0]);
             y = int.Parse(ars[1]);
         }
