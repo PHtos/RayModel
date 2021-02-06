@@ -9,17 +9,13 @@ namespace RayModelApp
     {
         [Description("Depth")]
         public int z { get; set; }
-
         [Description("Sound velocity")]
         public float c { get; set; }
-
         [Description("Temperature")]
         public float t { get; set; }
-
         [Description("Salinity")]
         public float p { get; set; }
     }
-
     public class Profile
     {
         public int x { get; set; }
@@ -40,11 +36,14 @@ namespace RayModelApp
             y = int.Parse(ars[1]);
         }
 
+
+
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
             sb.Append(string.Format("{0},{1}", x, y));
-            for(int i = 0; i < Points.Count; i++)
+            for (int i = 0; i < Points.Count; i++)
             {
                 sb.Append(string.Format(",{0},{1},{2},{3}", Points[i].z, Points[i].c, Points[i].t, Points[i].p));
             }
@@ -56,7 +55,7 @@ namespace RayModelApp
             using (TextWriter tw = File.CreateText(fileName))
             {
                 foreach (ProfilePoint p in Points)
-                    tw.WriteLine(string.Format("{0};{1};{2};{3}",p.z,p.c,p.t,p.p));
+                    tw.WriteLine(string.Format("{0};{1};{2};{3}", p.z, p.c, p.t, p.p));
                 tw.Close();
             }
 

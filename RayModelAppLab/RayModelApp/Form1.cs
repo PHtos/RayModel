@@ -13,7 +13,6 @@ using System.IO;
 using System.Diagnostics;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-// HACK: using mc3vray;
 
 namespace RayModelApp
 {
@@ -22,18 +21,14 @@ namespace RayModelApp
         #region Global Var
 
         Sreda Sr = new Sreda();
-
         BindingList<Point4D> Points = new BindingList<Point4D>();
         List<Point3D> GraphPoints = new List<Point3D>();
         static ConcurrentQueue<Point4D> queue = new ConcurrentQueue<Point4D>();
         static List<Pnt> pnts = new List<Pnt>();
         static object locker = new object();
-
         Assembly asm;
         Type type;
-
         static MethodInfo method;
-
         static object obj;
         static double Omega;
         static int ErrPoint;
@@ -63,13 +58,15 @@ namespace RayModelApp
         int nxGrid = 3;
         int nyGrid = 4;
 
+        string sProfileDir = "";
+
         #endregion
 
         //
 
         #region Load
 
-        public RayForm( )
+        public RayForm()
         {
             InitializeComponent();
 
@@ -104,31 +101,37 @@ namespace RayModelApp
 
             Sr.Length = 100000;
             Sr.Width = 100000;
-            Sr.Depth = 100;
+            Sr.Depth = 50;
 
-            Sr.Up = 0.9;
-            Sr.Bottom = 0.7;
+            Sr.Up = 0.9;            // HACH:Ray.Ksrf = 0.9;
+            Sr.Bottom = 0.7;        // HACH:Ray.Kbtm = 0.7;
 
             Sr.Frequency = 37.5f;
             Sr.Phase = 0.0f;
-            Sr.ReceiverDepth = 95;
+            Sr.ReceiverDepth = 45;  // HACH: Ray.Hgas = 45;
 
+            Sr.Traectory.Add(new Point3D() { X = 0, Y = 0, Z = 5 });
+            Sr.Traectory.Add(new Point3D() { X = 2000, Y = 2000, Z = 5 });
 
-            Sr.Traectory.Add(new Point3D() { X = 0, Y = 0, Z = 40 });
-            Sr.Traectory.Add(new Point3D() { X = 2000, Y = 2000, Z = 40 });
+            Sr.Profile.Add(new ProfilePoint() { z = 00, c = 1540, p = 23.1f, t = 21.0f });
+            Sr.Profile.Add(new ProfilePoint() { z = 10, c = 1542, p = 25.1f, t = 19.0f });
+            Sr.Profile.Add(new ProfilePoint() { z = 30, c = 1545, p = 27.3f, t = 15.0f });
+            Sr.Profile.Add(new ProfilePoint() { z = 50, c = 1548, p = 29.3f, t = 10.0f });
 
-            Sr.Profile.Add(new ProfilePoint() { z = 0,      c = 1545, p = 33.1f, t = 32.2f });
-            Sr.Profile.Add(new ProfilePoint() { z = 40,     c = 1540, p = 20.1f, t = 20.0f });
-            Sr.Profile.Add(new ProfilePoint() { z = 70,     c = 1550, p = 25.3f, t = 10.0f });
-            Sr.Profile.Add(new ProfilePoint() { z = 100,    c = 1565, p = 28.3f, t = 7.0f });
-
-
-            Points.Add(new Point4D() { X = 0, Y = 0, Z = 40, W = 5 });
-            Points.Add(new Point4D() { X = 2000, Y = 2000, Z = 40, W = 0 });
-
+            Points.Add(new Point4D() { X = 1, Y = 1, Z = 5, W = 1 });
+            Points.Add(new Point4D() { X = 2000, Y = 2000, Z = 5, W = 0 });
 
             pg1.SelectedObject = Sr;
             pg1.PropertySort = PropertySort.Categorized;
+
+            // HACH:
+            /*
+            Ray.Hz.Clear();
+            Ray.Hz.AddRange(Sr.Profile.Select(p => (double)p.z).ToArray());
+
+            Ray.Cz.Clear();
+            Ray.Cz.AddRange(Sr.Profile.Select(p => (double)p.c).ToArray());
+            */
 
             #endregion
 
@@ -155,6 +158,8 @@ namespace RayModelApp
             dgw.DataSource = Points;
 
             #endregion
+
+            bArtRun.Visible = false;
         }
 
         #endregion
@@ -166,6 +171,8 @@ namespace RayModelApp
         private void button1_Click(object sender, EventArgs e)
         {
             stCoord.Text = string.Format("Capacity {0}", GraphPoints.Count);
+
+            bArtRun.Visible = false;
         }
 
         private void cmiTraectories_Click(object sender, EventArgs e)
@@ -183,6 +190,8 @@ namespace RayModelApp
                         Points.Add(new Point4D() { X = p.X, Y = p.Y, Z = p.Z, W = 0 });
                     }
                     dgw.DataSource = Points;
+
+                    bArtRun.Visible = false;
                 }
             }
         }
@@ -196,6 +205,8 @@ namespace RayModelApp
                     Sr.Profile.Clear();
                     foreach (var p in f.p.Points)
                         Sr.Profile.Add(p);
+
+                    bArtRun.Visible = false;
                 }
             }
         }
@@ -244,10 +255,12 @@ namespace RayModelApp
                                 Points.Add(new Point4D() { X = px, Y = py, Z = pz, W = pw });
                             }
                         }
+                        bArtRun.Visible = false;
                         break;
                     case 1:
                         Sr.Load(ofd.FileName);
                         pg1.SelectedObject = Sr;
+                        bArtRun.Visible = false;
                         break;
                 }
                 GLC.Invalidate();
@@ -297,6 +310,7 @@ namespace RayModelApp
         private void GLC_MouseUp(object sender, MouseEventArgs e)
         {
             lbDown = false;
+            //glX += 0.1;
             GLC.Invalidate();
         }
 
@@ -357,7 +371,6 @@ namespace RayModelApp
             #endregion
             GLC.SwapBuffers();
         }
-
 
         #endregion
 
@@ -469,7 +482,7 @@ namespace RayModelApp
 
         //
 
-        private void btnMakePoints_Click(object sender, EventArgs e)
+        private void btnMakePoints_Click_1(object sender, EventArgs e)
         {
             Point4D p4d;
             List<double> times = new List<double>();
@@ -552,61 +565,196 @@ namespace RayModelApp
                 queue.Enqueue(new Point4D() { X = GraphPoints[i].X, Y = GraphPoints[i].Y, Z = GraphPoints[i].Z, W = times[i] });
             times = null;
             Console.WriteLine(string.Format("GraphPoints.Count = {0} Queue ={1}", GraphPoints.Count, queue.Count));
+            //TestPoint();
+
+            // HACH:
+            /*
+            Ray.Hz.Clear();
+            Ray.Hz.AddRange(Sr.Profile.Select(p => (double)p.z).ToArray());
+
+            Ray.Cz.Clear();
+            Ray.Cz.AddRange(Sr.Profile.Select(p => (double)p.c).ToArray());
+            */
+
+            bArtRun.Visible = true;
         }
 
-        private void bArtRun_Click(object sender, EventArgs e)
+        private void bArtem_Click(object sender, EventArgs e)
         {
-            int i;
-            bool isVelocityCheck = true;
-            Console.WriteLine(Points.Count);
-            if (Points.Count > 1)
+            #region prepare
+
+            double dummy = 0;
+
+            double dT;
+            double.TryParse(cbTR.Text, out dT);
+
+            Console.WriteLine(GraphPoints.Count);
+            hobj = new double[GraphPoints.Count];
+            lobj = new double[GraphPoints.Count];
+            time = new double[GraphPoints.Count];
+
+            for (int i = 0; i < GraphPoints.Count; i++)
             {
-                for (i = 0; i < Points.Count - 1; i++)
+                hobj[i] = GraphPoints[i].Z;
+                lobj[i] = Math.Sqrt(Math.Pow(GraphPoints[i].X, 2.0) + Math.Pow(GraphPoints[i].Y, 2.0));
+                time[i] = i * dT;
+            }
+
+            // HACH:
+            /*
+            Array.Resize(ref Ray.Kz, Ray.Hz.Count - 1);
+            Array.Clear(Ray.Kz, 0, Ray.Kz.Length);
+            for (int i = 0; i < Ray.Kz.Length; i++)
+            {
+                if (Ray.Cz[i] == Ray.Cz[i + 1])
+                    Ray.Cz[i + 1] += 0.001;                                             // якщо швидкість стала, робимо коефіцієнт наближеним до нуля
+                Ray.Kz[i] = (Ray.Cz[i + 1] - Ray.Cz[i]) / (Ray.Hz[i + 1] - Ray.Hz[i]);  // обчислюємо коефіцієнти зміни швидкості звуку за глибиною
+            }
+
+            Array.Resize(ref Ray.Yr, Ray.Kz.Length);
+            Array.Clear(Ray.Yr, 0, Ray.Yr.Length);
+            for (int i = 0; i < Ray.Yr.Length; i++)                                     // обчислюємо ординати центрів кіл для кожного водного шару
+                Ray.Yr[i] = Ray.Cz[i] / Ray.Kz[i] - Ray.Hz[i];
+
+            GObject gObj = new GObject();
+            */
+
+            List<double> timeRays = new List<double>();
+            List<double> ampRaysX = new List<double>();
+            List<double> ampRaysY = new List<double>();
+            List<double> ampRaysZ = new List<double>();
+
+            #endregion
+
+            for (int i = 0; i < GraphPoints.Count; i++)
+            {
+                List<double> timR = new List<double>();
+                List<double> ampR = new List<double>();
+                List<double> angR = new List<double>();
+                List<double> lngR = new List<double>();
+
+                // HACH: gObj.calcAmp(hobj[i], lobj[i], time[i], ampR, timR, angR, lngR);
+
+                for (int j = 0; j < timR.Count; j++)
                 {
-                    ///Console.WriteLine(Points[i].W);
-                    if (Points[i].W == 0)
-                    {
-                        isVelocityCheck = false;
-                    }
-                }
-                if (isVelocityCheck == true) // Швидкість на відрізках існує, можна робити розрахунок
-                {
-                    stFreq = 29;// Sr.Frequency;
-                    stGAS = 60;// Sr.ReceiverDepth;
-                    pnts.Clear();
-                    Task[] tasks = new Task[4];
-                    Stopwatch sw = new Stopwatch();
-                    sw.Start();
-                    ErrPoint = 0;
-                    for (int j = 0; j < 4; j++)
-                    {
-                        tasks[j] = new Task(Calc);
-                        tasks[j].Start();
-                    }
-                    Task.WaitAll(tasks);
-                    sw.Stop();
-                    Text = string.Format("Parallel {0} sec Count={1}", sw.ElapsedMilliseconds / 1000.0, pnts.Count);
-                    MessageBox.Show(string.Format("Points {0} by {1} sec.", GraphPoints.Count, sw.ElapsedMilliseconds / 1000.0));
-                    MessageBox.Show(string.Format("Error Points {0}", ErrPoint));
-                    chart1.Series["sDist"].Points.Clear();
-                    var ps = pnts.OrderBy(p => p.x);
-                    foreach (Pnt p in ps)
-                        chart1.Series["sDist"].Points.AddXY(p.x, p.y);
-                }
-                else
-                {
-                    MessageBox.Show("Velosity not check", "", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    timeRays.Add(dT * Math.Round(timR[j] / dT) + time[i]);
+
+                    dummy = ampR[j] * Math.Cos(angR[j]) * Math.Sin(2 * Math.PI * Sr.Frequency * timR[j]);
+
+                    ampRaysX.Add(dummy * GraphPoints[i].X / lobj[i]);
+                    ampRaysY.Add(dummy * GraphPoints[i].Y / lobj[i]);
+                    ampRaysZ.Add(ampR[j] * Math.Sin(angR[j]) * Math.Sin(2 * Math.PI * Sr.Frequency * timR[j]));
                 }
             }
-            else
+
+            #region Graph
+
+            for (int minT = 0; minT < timeRays.Count - 1; minT++)
             {
-                MessageBox.Show("Traectoty not found", "", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                Console.WriteLine(string.Format("minT = {0}", minT));
+                for (int j = minT + 1; j < timeRays.Count; j++)
+                {
+                    if (timeRays[minT] > timeRays[j])
+                    {
+                        double rT = timeRays[minT];
+                        timeRays[minT] = timeRays[j];
+                        timeRays[j] = rT;
+                        rT = ampRaysX[minT];
+                        ampRaysX[minT] = ampRaysX[j];
+                        ampRaysX[j] = rT;
+                        rT = ampRaysY[minT];
+                        ampRaysY[minT] = ampRaysY[j];
+                        ampRaysY[j] = rT;
+                        rT = ampRaysZ[minT];
+                        ampRaysZ[minT] = ampRaysZ[j];
+                        ampRaysZ[j] = rT;
+                    }
+                }
             }
+            List<double> resTime = new List<double>();
+            List<double> resAmp = new List<double>();
+            for (int i = 0; i < timeRays.Count; i++)
+            {
+                Console.WriteLine(string.Format("timeRays = {0}", i));
+                if (i > 0 && timeRays[i - 1] == timeRays[i])
+                    continue;
+                double ampx = 0;
+                double ampy = 0;
+                double ampz = 0;
+                double numberTk = 0;
+                for (int k = i; k < timeRays.Count; k++)
+                {
+                    if (timeRays[k] == timeRays[i])
+                    {
+                        ampx += ampRaysX[k];
+                        ampy += ampRaysY[k];
+                        ampz += ampRaysZ[k];
+                        numberTk += 1.0;
+                    }
+                }
+                ampx /= numberTk;
+                ampy /= numberTk;
+                ampz /= numberTk;
+                double amp0 = Math.Sqrt(ampx * ampx + ampy * ampy + ampz * ampz);
+                resTime.Add(timeRays[i]);
+                resAmp.Add(amp0);
+            }
+            for (int i = 0; i < resTime.Count; i++)
+                chart1.Series[0].Points.AddXY(resTime[i], resAmp[i]);
+
+            #endregion
+
         }
 
         //
 
-        #region wtf?
+        #region отхер
+
+        private void btnMakePoints_Click(object sender, EventArgs e)
+        {
+            Point4D p4d;
+            double dt, dx, dy, dz, px, py, pz;
+            double path, len, currentTime;
+            double.TryParse(cbTR.Text, out dt);
+            GraphPoints.Clear();
+            while (!queue.IsEmpty)
+                queue.TryDequeue(out p4d);
+            chart1.Series["sDist"].Points.Clear();
+            currentTime = 0;
+            for (int i = 0; i < Points.Count - 1; i++)
+            {
+                path = getDist(Points[i], Points[i + 1]);
+                px = Points[i + 1].X - Points[i].X;
+                py = Points[i + 1].Y - Points[i].Y;
+                pz = Points[i + 1].Z - Points[i].Z;
+
+                dx = Points[i].W * px / Math.Sqrt(px * px + py * py + pz * pz);
+                dy = Points[i].W * py / Math.Sqrt(px * px + py * py + pz * pz);
+                dz = Points[i].W * pz / Math.Sqrt(px * px + py * py + pz * pz);
+
+                px = Points[i].X;
+                py = Points[i].Y;
+                pz = Points[i].Z;
+                GraphPoints.Add(new Point3D() { X = px, Y = py, Z = pz });
+                queue.Enqueue(new Point4D() { X = px, Y = py, Z = pz, W = currentTime });
+                chart1.Series["sDist"].Points.Add(Math.Sqrt(px * px + py * py));
+                len = 0;
+                currentTime += dt;
+                do
+                {
+                    px += dt * dx;
+                    py += dt * dy;
+                    pz += dt * dz;
+                    Console.WriteLine(string.Format("{0} {1} {2}", px, py, pz));
+                    GraphPoints.Add(new Point3D() { X = px, Y = py, Z = pz });
+                    queue.Enqueue(new Point4D() { X = px, Y = py, Z = pz, W = currentTime });
+                    chart1.Series["sDist"].Points.Add(Math.Sqrt(px * px + py * py));
+                    len += dt;
+                    currentTime += dt;
+                } while (len < path / Points[i].W);
+            }
+            Console.WriteLine(GraphPoints.Count);
+        }
 
         private double getDist(Point4D a, Point4D b)
         {
@@ -614,83 +762,7 @@ namespace RayModelApp
         }
 
 
-        static void Calculate()
-        {
-            double p;
-            while (!queue.IsEmpty)
-            {
-                queue.TryDequeue(out Point4D p4d);
-                lock (locker)
-                {
-                    //pnts.Add(new Pnt() { x = p4d.W, y = (double)result });
-                    try
-                    {
-                        p = Math.Cos(Omega * Math.PI * p4d.Z) * Math.Exp(-0.01 * Math.Sqrt(p4d.X * p4d.X + p4d.Y * p4d.Y));
-                        pnts.Add(new Pnt() { x = p4d.W, y = p });
-                        Application.OpenForms[0].Text = queue.Count.ToString();
-                    }
-                    catch (Exception ex)
-                    {
-                        ErrPoint++;
-                    }
-                }
-            }
-        }
-
-        static void Calc()
-        {
-            double hgas;
-            double hobj;
-            double lobj;
-            Point4D p4d;
-            //GObject go = new GObject();
-            while (!queue.IsEmpty)
-            {
-                queue.TryDequeue(out p4d);
-                hobj = 5;
-                hgas = 50;
-                double kP = 0.9;
-                double kD = 0.7;
-                double omega = 29;
-                double[] c = { 1545, 1540, 1550, 1565 };
-                double[] h = { 0, 40, 70, 100 };
-                lobj = Math.Sqrt(Math.Pow(p4d.X, 2.0) + Math.Pow(p4d.Y, 2.0));
-
-                if (method != null)
-                {
-
-                    ///object result = method.Invoke(obj, new object[] { hgas, hobj, lobj, kP, kD, omega, c, h });
-                    //object result = go.calcAmp(hgas, hobj, lobj, kP, kD, omega, c, h);
-                    double[] tR;
-                    double[] aR;
-
-                    // HACK: go.calcAmp(hgas, hobj, lobj, kP, kD, omega, c, h, out tR, out aR);
-
-                    lock (locker)
-                    {
-                        //pnts.Add(new Pnt() { x = p4d.W, y = (double)result });
-                        try
-                        {
-                            // HACK: Console.WriteLine(string.Format("amp: {0}", aR[0]));
-                            // HACK: pnts.Add(new Pnt() { x = p4d.W, y = aR[0] });
-
-
-                            //Application.OpenForms[0].Text = queue.Count.ToString();
-                        }
-                        catch (Exception ex)
-                        {
-                            ErrPoint++;
-                        }                        
-                    }
-                }
-            }
-        }
-
-        #endregion
-
-        //
-
-        #region not used
+        #region notused
 
         private void btnParallel_Click(object sender, EventArgs e)
         {
@@ -736,6 +808,7 @@ namespace RayModelApp
             Stopwatch sw = new Stopwatch();
             sw.Start();
             ErrPoint = 0;
+
             for (int i = 0; i < 16; i++)
             {
                 tasks[i] = new Task(Calc);
@@ -743,6 +816,7 @@ namespace RayModelApp
             }
             Task.WaitAll(tasks);
             sw.Stop();
+
             Text = string.Format("Parallel {0} sec Count={1}", sw.ElapsedMilliseconds / 1000.0, pnts.Count);
             MessageBox.Show(string.Format("Points {0} by {1} sec.", GraphPoints.Count, sw.ElapsedMilliseconds / 1000.0));
             MessageBox.Show(string.Format("Error Points {0}", ErrPoint));
@@ -751,6 +825,46 @@ namespace RayModelApp
             foreach (Pnt p in ps)
                 chart1.Series["sDist"].Points.AddXY(p.x, p.y);
         }
+
+        static void Calc()
+        {
+            double hobj;
+            double lobj;
+            Point4D p4d;
+            // HACH: GObject go = new GObject();
+            while (!queue.IsEmpty)
+            {
+                queue.TryDequeue(out p4d);
+                hobj = 5;
+                lobj = Math.Sqrt(Math.Pow(p4d.X, 2.0) + Math.Pow(p4d.Y, 2.0));
+
+                if (method != null)
+                {
+                    //object result = method.Invoke(obj, new object[] { hgas, hobj, lobj, kP, kD, omega, c, h });
+                    //object result = go.calcAmp(hgas, hobj, lobj, kP, kD, omega, c, h);
+                    double[] tR;
+                    double[] aR;
+                    double[] lR;
+                    double[] angR;
+                    // HACH: to change - go.calcAmp(hobj, lobj, out tR, out aR, out angR, out lR);
+                    lock (locker)
+                    {
+                        //pnts.Add(new Pnt() { x = p4d.W, y = (double)result });
+                        try
+                        {
+                            // HACH: to change - Console.WriteLine(string.Format("amp: {0}", aR[0]));
+                            // HACH: to change - pnts.Add(new Pnt() { x = p4d.W, y = aR[0] });
+                            //Application.OpenForms[0].Text = queue.Count.ToString();
+                        }
+                        catch (Exception ex)
+                        {
+                            ErrPoint++;
+                        }
+                    }
+                }
+            }
+        }
+
 
         private void bRun_Click(object sender, EventArgs e)
         {
@@ -801,81 +915,113 @@ namespace RayModelApp
             }
         }
 
-        private void bArtem_Click(object sender, EventArgs e)
+        static void Calculate()
         {
-            chart1.Series[0].Points.Clear();
+            double p;
+            while (!queue.IsEmpty)
+            {
+                queue.TryDequeue(out Point4D p4d);
+                lock (locker)
+                {
+                    //pnts.Add(new Pnt() { x = p4d.W, y = (double)result });
+                    try
+                    {
+                        p = Math.Cos(Omega * Math.PI * p4d.Z) * Math.Exp(-0.01 * Math.Sqrt(p4d.X * p4d.X + p4d.Y * p4d.Y));
+                        pnts.Add(new Pnt() { x = p4d.W, y = p });
+                        Application.OpenForms[0].Text = queue.Count.ToString();
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrPoint++;
+                    }
+                }
+            }
+        }
+
+
+        private void btnSequential_Click(object sender, EventArgs e)
+        {
+            double dt, dx, dy, dz, px, py, pz;
+            double path, len;
+            double.TryParse(cbTR.Text, out dt);
+            GraphPoints.Clear();
+            chart1.Series["sDist"].Points.Clear();
+            for (int i = 0; i < Points.Count - 1; i++)
+            {
+                path = getDist(Points[i], Points[i + 1]);
+                px = Points[i + 1].X - Points[i].X;
+                py = Points[i + 1].Y - Points[i].Y;
+                pz = Points[i + 1].Z - Points[i].Z;
+
+                dx = Points[i].W * px / Math.Sqrt(px * px + py * py + pz * pz);
+                dy = Points[i].W * py / Math.Sqrt(px * px + py * py + pz * pz);
+                dz = Points[i].W * pz / Math.Sqrt(px * px + py * py + pz * pz);
+
+                px = Points[i].X;
+                py = Points[i].Y;
+                pz = Points[i].Z;
+                GraphPoints.Add(new Point3D() { X = px, Y = py, Z = pz });
+                //chart1.Series["sDist"].Points.Add(Math.Sqrt(px * px + py * py));
+                //chart1.Series["sDepth"].Points.Add(pz);
+                len = 0;
+                do
+                {
+                    px += dt * dx;
+                    py += dt * dy;
+                    pz += dt * dz;
+                    Console.WriteLine(string.Format("{0} {1} {2}", px, py, pz));
+                    GraphPoints.Add(new Point3D() { X = px, Y = py, Z = pz });
+                    //chart1.Series["sDist"].Points.Add(Math.Sqrt(px * px + py * py));
+                    //chart1.Series["sDepth"].Points.Add(pz);
+                    len += dt;
+                } while (len < path / Points[i].W);
+            }
+            //
+
             double[] c = { 1545, 1540, 1550, 1565 };
             double[] h = { 0, 40, 70, 100 };
-            double hgas = 80;
-            double dt;
-            double.TryParse(cbTR.Text, out dt);
-            Console.WriteLine(GraphPoints.Count);
-            hobj = new double[GraphPoints.Count];
-            lobj = new double[GraphPoints.Count];
-            time = new double[GraphPoints.Count];
 
-            for (int i = 0; i < GraphPoints.Count; i++)
-            {
-                hobj[i] = GraphPoints[i].Z;
-                lobj[i] = Math.Sqrt(Math.Pow(GraphPoints[i].X, 2.0) + Math.Pow(GraphPoints[i].Y, 2.0));
-                time[i] = i * dt;
-            }
-
+            // double[] c = Sr.Profiles[0].Points.Select(p => (double)p.c).ToArray();
+            // double[] h = Sr.Profiles[0].Points.Select(p => (double)p.z).ToArray();
+            double hgas = Sr.ReceiverDepth;
+            double hobj = 55;
+            double lobj = 1000;
             double kP = 0.9;
             double kD = 0.7;
-            double omega = 3.7;
-            // HACK: mc3vray.GObject gObj = new GObject();
-            List<double> timeRays = new List<double>();
-            List<double> ampRays = new List<double>();
-            for (int i = 0; i < 1401; i++)
+            double omega = 37;
+            //
+            Console.WriteLine(string.Format("Number points for calculation {0}", GraphPoints.Count));
+            long ellapledTicks;
+            Stopwatch sWatch = new Stopwatch();
+            sWatch.Start();
+            for (int i = 0; i < GraphPoints.Count; i++)
             {
-                double[] tR;
-                double[] aR;
-                // HACK: gObj.calcAmp(hgas, hobj[i], lobj[i], kP, kD, omega, c, h, out tR, out aR);
-                // HACK: for (int j = 0; j < tR.Length; j++)
-                // HACK: {
-                // HACK: timeRays.Add(tR[j] + time[i]);
-                // HACK: ampRays.Add(aR[j]);
-                // HACK: }
+                ellapledTicks = DateTime.Now.Ticks;
+                hobj = GraphPoints[i].Z;
+                lobj = Math.Sqrt(Math.Pow(GraphPoints[i].X, 2.0) + Math.Pow(GraphPoints[i].Y, 2.0));
+                //object result = method.Invoke(obj, new object[] { hgas, hobj, lobj, kP, kD, omega, c, h });
+                object result = method.Invoke(obj, new object[] { hgas, hobj, lobj, kP, kD, omega, c, h });
+                /* Console.WriteLine(string.Format("{0} {1}", i, (result as GObject).ampry[0]));
+                 chart1.Series["sDist"].Points.Add((result as GObject).ampry[0]);
+                 ellapledTicks = DateTime.Now.Ticks - ellapledTicks;
+                 chart1.Series["sDepth"].Points.Add(ellapledTicks);*/
             }
-            for (int minT = 0; minT < timeRays.Count - 1; minT++)
-            {
-                Console.WriteLine(string.Format("minT = {0}", minT));
-                for (int j = minT + 1; j < timeRays.Count; j++)
-                {
-                    if (timeRays[minT] > timeRays[j])
-                    {
-                        double rT = timeRays[minT];
-                        timeRays[minT] = timeRays[j];
-                        timeRays[j] = rT;
-                        rT = ampRays[minT];
-                        ampRays[minT] = ampRays[j];
-                        ampRays[j] = rT;
-                    }
-                }
-            }
-            List<double> resTime = new List<double>();
-            List<double> resAmp = new List<double>();
-            for (int i = 0; i < timeRays.Count; i++)
-            {
-                Console.WriteLine(string.Format("timeRays = {0}", i));
-                if (i > 0 && timeRays[i - 1] == timeRays[i])
-                    continue;
-                double amp0 = 0;
-                for (int k = i; k < timeRays.Count; k++)
-                {
-                    if (timeRays[k] == timeRays[i])
-                    {
-                        amp0 += ampRays[k] * Math.Sin(2 * Math.PI * omega * timeRays[k]);
-                        resTime.Add(timeRays[k]);
-                        resAmp.Add(ampRays[k]);
-                    }
-                }
-            }
-            for (int i = 0; i < resTime.Count; i++)
-                chart1.Series[0].Points.AddXY(resTime[i], resAmp[i]);
-
+            sWatch.Stop();
+            MessageBox.Show(string.Format("Points {0} by {1} sec.", GraphPoints.Count, sWatch.ElapsedMilliseconds / 1000.0));
         }
+
+
+        private void TestPoint()
+        {
+            Point4D p4d;
+            foreach (Point3D p in GraphPoints)
+            {
+                queue.TryDequeue(out p4d);
+                Console.WriteLine(string.Format("{0}  {1}", p, p4d));
+            }
+        }
+
+        #endregion
 
         #endregion
     }

@@ -94,6 +94,8 @@
       <DependentUpon>FrmTraectories.cs</DependentUpon>
     </Compile>
     <Compile Include="Profile.cs" />
+    <Compile Include="Ray\Ray_.cs" />
+    <Compile Include="Ray\Ray_Stream_000_090.cs" />
     <Compile Include="Sreda.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>

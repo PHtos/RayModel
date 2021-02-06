@@ -24,13 +24,13 @@ namespace RayModelApp
         private int depth;
         [Category("Water area")]
         [Description("Depth of water area")]
-        public int Depth 
+        public int Depth
         {
-            get 
-            { 
-                return depth; 
+            get
+            {
+                return depth;
             }
-            set 
+            set
             {
                 if (value > 40 && value < 800)
                     depth = value;
@@ -45,7 +45,6 @@ namespace RayModelApp
         }
 
         #endregion
-
 
         #region Coefficients
 
@@ -66,9 +65,12 @@ namespace RayModelApp
                     MessageBox.Show("Value resolution must be 0.01", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 else
                     if (value < 0 || value > 1)
-                        MessageBox.Show("Value must be between 0 and 1", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show("Value must be between 0 and 1", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 else
+                {
                     up = value;
+                    Ray_.Ksrf = value;
+                }
             }
         }
 
@@ -87,14 +89,28 @@ namespace RayModelApp
                     if (value < 0 || value > 1)
                     MessageBox.Show("Value must be between 0 and 1", "", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 else
+                {
                     bottom = value;
+                    Ray_.Kbtm = value;
+                }
             }
         }
 
         #endregion
 
-
         #region Other
+
+        private int receiverDepth;
+        [Description("Depth of receiver")]
+        public int ReceiverDepth
+        {
+            get { return receiverDepth; }
+            set
+            {
+                receiverDepth = value;
+                Ray_.Hgas = value;
+            }
+        }
 
         [Category("Source")]
         [Description("Source Frequency")]
@@ -103,10 +119,6 @@ namespace RayModelApp
         [Category("Source")]
         [Description("Source Phase")]
         public float Phase { get; set; }
-
-        [Category("Source")]
-        [Description("Depth of receiver")]
-        public int ReceiverDepth { get; set; }
 
         [Description("Profile")]
         public List<ProfilePoint> Profile { get; set; }
@@ -130,7 +142,6 @@ namespace RayModelApp
 
         #endregion
 
-
         public Sreda()
         {
             Traectory = new List<Point3D>();
@@ -141,7 +152,7 @@ namespace RayModelApp
         {
             using (TextReader tr = File.OpenText(filename))
             {
-                int nNer,nSources,nProf;
+                int nNer, nSources, nProf;
                 string s = tr.ReadLine();
                 string[] pars = s.Split(',');
                 nNer = int.Parse(pars[0]);
@@ -149,11 +160,10 @@ namespace RayModelApp
                 nSources = ushort.Parse(pars[2]);
                 Length = int.Parse(pars[3]);
                 Width = int.Parse(pars[4]);
-                Depth = int.Parse(pars[5]);                
+                Depth = int.Parse(pars[5]);
                 ReceiverDepth = int.Parse(pars[7]);
                 tr.Close();
             }
         }
-
     }
 }

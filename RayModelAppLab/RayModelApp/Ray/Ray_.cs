@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace mc3vray
+namespace RayModelApp
 {
-    public class Ray
+    public class Ray_
     {
         #region Константи та попередні розрахунки сталих параметрів
 
@@ -25,6 +25,8 @@ namespace mc3vray
 
         public static double L_000_090, T_000_090, Amp_000_090;
         public static double L_090_180, T_090_180, Amp_090_180;
+        public static double x_000_090;
+        public static double x_090_180;
 
         public static int i1;                   // номер водного шару гідроакустичної станції
         public static double Hgas;              // глибина 
@@ -34,7 +36,7 @@ namespace mc3vray
 
         public static List<double> List_AmR = new List<double>();   // амплітуда променів
         public static List<double> List_AnR = new List<double>();   // кут приходу до гідроакустичної станції
-        public static List<double> List_LnR = new List<double>();   // відстаню роходжнення променів від джерела звуку до гідроакустичної станції
+        public static List<double> List_LnR = new List<double>();   // ? відстаню роходжнення променів від джерела звуку до гідроакустичної станції
         public static List<double> List_TmR = new List<double>();   // час за який промені проходять відстань від джерела звуку до гідроакустичної станції
 
         // параметри за замовченням
@@ -50,7 +52,7 @@ namespace mc3vray
 
         public void PrepareVal()
         {
-            // UNDONE: exept parameter
+            // UNDONE: except parameter
 
             #region Обчислення кількості відзеркалень
 
@@ -142,14 +144,14 @@ namespace mc3vray
 
         // ***
 
-        public static void Str_000_090( )
-        {       
+        public static void Str_000_090()
+        {
             L_000_090 = 0; T_000_090 = 0; Amp_000_090 = 0;
 
             double L = 0;
             int Layer = i0;
 
-            
+
 
             double R = 0, X = 0;
 
@@ -164,25 +166,26 @@ namespace mc3vray
             if (Hobj < Hz[Layer])
                 Angel = -1;
             else
-            {   do
+            {
+                do
                 {
                     BgnAngl = Angel * Math.PI / 180;
 
                     while (Lobj > L)
                     {
-                        /*
-                        S.Layer_000_090(    BgnAngl,    // початковий кут
-                                            H,          // спочатку початкова глибина джерела звуку, потім вузлові точки по глибині
-                                            C,          // спочатку початкова швидкість звуку джерела, потім вузлові точки по глибині
-                                            i,          // номер поточного точки водного прошарку
-                            out EndAngl,    // кінцевий кут
-                            out X,          // радіус кола
-                            out R,          // центр кола 
-                            out j);         // номер поточного точки водного прошарку
-                        */
+                        //S.Do_000_090(       BgnAngl,    // початковий кут
+                        //                    H,          // спочатку початкова глибина джерела звуку, потім вузлові точки по глибині
+                        //                    C,          // спочатку початкова швидкість звуку джерела, потім вузлові точки по глибині
+                        //                    i,          // номер поточного точки водного прошарку
+                        //    out BgnAngl,
+                        //    out EndAngl,    // кінцевий кут
+                        //    out X,          // радіус кола
+                        //    out R,          // центр кола 
+                        //    out j);         // номер поточного точки водного прошарку
+
                         L++;
 
-                       // double lri = (Math.Abs(rFi * Math.Cos(eFi)) > Math.Abs(rFi * Math.Cos(bFi))) ? Math.Abs(rFi * (fi - bFi)) : Math.Abs(rFi * (fi - eFi));
+                        // double lri = (Math.Abs(rFi * Math.Cos(eFi)) > Math.Abs(rFi * Math.Cos(bFi))) ? Math.Abs(rFi * (fi - bFi)) : Math.Abs(rFi * (fi - eFi));
 
                         //i = j;
                         //H = Hz[j];
@@ -192,14 +195,14 @@ namespace mc3vray
 
                     Angel += dAngel;
                 }
-                while(BgnAngl > 0)
+                while (BgnAngl > 0)
                 ;
             }
         }
 
         public static void Str_090_180()
         {
-            
+
         }
 
     }
