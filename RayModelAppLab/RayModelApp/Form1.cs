@@ -33,9 +33,9 @@ namespace RayModelApp
         static double Omega;
         static int ErrPoint;
 
-        double[] hobj = null;
-        double[] lobj = null;
-        double[] time = null;
+        double[] Hobj = null;
+        double[] Lobj = null;
+        double[] Time = null;
 
         static double stFreq;
         static double stGAS;
@@ -589,15 +589,15 @@ namespace RayModelApp
             double.TryParse(cbTR.Text, out dT);
 
             Console.WriteLine(GraphPoints.Count);
-            hobj = new double[GraphPoints.Count];
-            lobj = new double[GraphPoints.Count];
-            time = new double[GraphPoints.Count];
+            Hobj = new double[GraphPoints.Count];
+            Lobj = new double[GraphPoints.Count];
+            Time = new double[GraphPoints.Count];
 
             for (int i = 0; i < GraphPoints.Count; i++)
             {
-                hobj[i] = GraphPoints[i].Z;
-                lobj[i] = Math.Sqrt(Math.Pow(GraphPoints[i].X, 2.0) + Math.Pow(GraphPoints[i].Y, 2.0));
-                time[i] = i * dT;
+                Hobj[i] = GraphPoints[i].Z;
+                Lobj[i] = Math.Sqrt(Math.Pow(GraphPoints[i].X, 2.0) + Math.Pow(GraphPoints[i].Y, 2.0));
+                Time[i] = i * dT;
             }
 
             // HACH:
@@ -637,12 +637,12 @@ namespace RayModelApp
 
                 for (int j = 0; j < timR.Count; j++)
                 {
-                    timeRays.Add(dT * Math.Round(timR[j] / dT) + time[i]);
+                    timeRays.Add(dT * Math.Round(timR[j] / dT) + Time[i]);
 
                     dummy = ampR[j] * Math.Cos(angR[j]) * Math.Sin(2 * Math.PI * Sr.Frequency * timR[j]);
 
-                    ampRaysX.Add(dummy * GraphPoints[i].X / lobj[i]);
-                    ampRaysY.Add(dummy * GraphPoints[i].Y / lobj[i]);
+                    ampRaysX.Add(dummy * GraphPoints[i].X / Lobj[i]);
+                    ampRaysY.Add(dummy * GraphPoints[i].Y / Hobj[i]);
                     ampRaysZ.Add(ampR[j] * Math.Sin(angR[j]) * Math.Sin(2 * Math.PI * Sr.Frequency * timR[j]));
                 }
             }
