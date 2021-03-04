@@ -30,8 +30,8 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RayForm));
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.FileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.OpenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -103,7 +103,7 @@
             this.toolStripSeparator1,
             this.выходToolStripMenuItem});
             this.FileToolStripMenuItem.Name = "FileToolStripMenuItem";
-            this.FileToolStripMenuItem.Size = new System.Drawing.Size(46, 24);
+            this.FileToolStripMenuItem.Size = new System.Drawing.Size(46, 26);
             this.FileToolStripMenuItem.Text = "&File";
             // 
             // OpenToolStripMenuItem
@@ -148,7 +148,7 @@
             this.trajectoriesToolStripMenuItem,
             this.profilesToolStripMenuItem});
             this.componentsToolStripMenuItem.Name = "componentsToolStripMenuItem";
-            this.componentsToolStripMenuItem.Size = new System.Drawing.Size(107, 24);
+            this.componentsToolStripMenuItem.Size = new System.Drawing.Size(107, 26);
             this.componentsToolStripMenuItem.Text = "Components";
             // 
             // trajectoriesToolStripMenuItem
@@ -228,7 +228,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.GLC);
             this.splitContainer1.Size = new System.Drawing.Size(1001, 614);
-            this.splitContainer1.SplitterDistance = 291;
+            this.splitContainer1.SplitterDistance = 290;
             this.splitContainer1.TabIndex = 3;
             // 
             // tableLayoutPanel2
@@ -243,14 +243,14 @@
             this.tableLayoutPanel2.Controls.Add(this.panel1, 0, 2);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tableLayoutPanel2.Margin = new System.Windows.Forms.Padding(4);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 4;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 62.5F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 37.5F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 86F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(291, 614);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(290, 614);
             this.tableLayoutPanel2.TabIndex = 5;
             // 
             // pg1
@@ -263,7 +263,7 @@
             this.pg1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.pg1.Name = "pg1";
             this.pg1.PropertySort = System.Windows.Forms.PropertySort.NoSort;
-            this.pg1.Size = new System.Drawing.Size(285, 310);
+            this.pg1.Size = new System.Drawing.Size(284, 310);
             this.pg1.TabIndex = 8;
             // 
             // contextMenuStrip1
@@ -331,7 +331,7 @@
             this.dgw.Name = "dgw";
             this.dgw.RowHeadersWidth = 51;
             this.dgw.RowTemplate.Height = 24;
-            this.dgw.Size = new System.Drawing.Size(285, 184);
+            this.dgw.Size = new System.Drawing.Size(284, 184);
             this.dgw.TabIndex = 0;
             this.dgw.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.dgw_CellValidating);
             // 
@@ -342,15 +342,15 @@
             this.panel1.Controls.Add(this.btnMakePoints);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(4, 506);
-            this.panel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panel1.Margin = new System.Windows.Forms.Padding(4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(283, 78);
+            this.panel1.Size = new System.Drawing.Size(282, 78);
             this.panel1.TabIndex = 7;
             // 
             // bArtRun
             // 
             this.bArtRun.Location = new System.Drawing.Point(203, 26);
-            this.bArtRun.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.bArtRun.Margin = new System.Windows.Forms.Padding(4);
             this.bArtRun.Name = "bArtRun";
             this.bArtRun.Size = new System.Drawing.Size(79, 28);
             this.bArtRun.TabIndex = 11;
@@ -368,16 +368,16 @@
             this.btnMakePoints.TabIndex = 9;
             this.btnMakePoints.Text = "Make";
             this.btnMakePoints.UseVisualStyleBackColor = true;
-            this.btnMakePoints.Click += new System.EventHandler(this.btnMakePoints_Click);
+            this.btnMakePoints.Click += new System.EventHandler(this.btnMakePoints_Click_1);
             // 
             // GLC
             // 
             this.GLC.BackColor = System.Drawing.Color.Black;
             this.GLC.Dock = System.Windows.Forms.DockStyle.Fill;
             this.GLC.Location = new System.Drawing.Point(0, 0);
-            this.GLC.Margin = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.GLC.Margin = new System.Windows.Forms.Padding(5);
             this.GLC.Name = "GLC";
-            this.GLC.Size = new System.Drawing.Size(706, 614);
+            this.GLC.Size = new System.Drawing.Size(707, 614);
             this.GLC.TabIndex = 0;
             this.GLC.VSync = false;
             this.GLC.Load += new System.EventHandler(this.glC_Load);
@@ -393,24 +393,24 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 25);
             this.tabPage3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(1007, 617);
+            this.tabPage3.Size = new System.Drawing.Size(1007, 620);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Graphics";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
             // chart1
             // 
-            chartArea2.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea2);
+            chartArea1.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea1);
             this.chart1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.chart1.Location = new System.Drawing.Point(0, 0);
             this.chart1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.chart1.Name = "chart1";
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series2.Name = "sDist";
-            this.chart1.Series.Add(series2);
-            this.chart1.Size = new System.Drawing.Size(1007, 617);
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series1.Name = "sDist";
+            this.chart1.Series.Add(series1);
+            this.chart1.Size = new System.Drawing.Size(1007, 620);
             this.chart1.TabIndex = 0;
             this.chart1.Text = "chart1";
             // 

@@ -113,10 +113,9 @@ namespace RayModelApp
             Sr.Traectory.Add(new Point3D() { X = 0, Y = 0, Z = 5 });
             Sr.Traectory.Add(new Point3D() { X = 2000, Y = 2000, Z = 5 });
 
-            Sr.Profile.Add(new ProfilePoint() { z = 00, c = 1540, p = 23.1f, t = 21.0f });
-            Sr.Profile.Add(new ProfilePoint() { z = 10, c = 1542, p = 25.1f, t = 19.0f });
-            Sr.Profile.Add(new ProfilePoint() { z = 30, c = 1545, p = 27.3f, t = 15.0f });
-            Sr.Profile.Add(new ProfilePoint() { z = 50, c = 1548, p = 29.3f, t = 10.0f });
+            Sr.Profile.Add(new ProfilePoint() { z = 00, c = 1500, p = 23.1f, t = 21.0f });
+            Sr.Profile.Add(new ProfilePoint() { z = 10, c = 1550, p = 25.1f, t = 19.0f });
+            Sr.Profile.Add(new ProfilePoint() { z = 30, c = 1525, p = 27.3f, t = 15.0f });
 
             Points.Add(new Point4D() { X = 1, Y = 1, Z = 5, W = 1 });
             Points.Add(new Point4D() { X = 2000, Y = 2000, Z = 5, W = 0 });
@@ -124,14 +123,14 @@ namespace RayModelApp
             pg1.SelectedObject = Sr;
             pg1.PropertySort = PropertySort.Categorized;
 
-            // HACH:
-            /*
-            Ray.Hz.Clear();
-            Ray.Hz.AddRange(Sr.Profile.Select(p => (double)p.z).ToArray());
 
-            Ray.Cz.Clear();
-            Ray.Cz.AddRange(Sr.Profile.Select(p => (double)p.c).ToArray());
-            */
+            Array.Clear(Ray_.Hz, 0, Ray_.Hz.Length);
+            Array.Resize(ref Ray_.Hz, Sr.Profile.Select(p => (double)p.z).ToArray().Length);
+                Ray_.Hz = Sr.Profile.Select(p => (double)p.z).ToArray();
+
+            Array.Clear(Ray_.Cz, 0, Ray_.Cz.Length);
+            Array.Resize(ref Ray_.Cz, Sr.Profile.Select(p => (double)p.c).ToArray().Length);
+                Ray_.Cz = Sr.Profile.Select(p => (double)p.c).ToArray();
 
             #endregion
 
@@ -581,129 +580,156 @@ namespace RayModelApp
 
         private void bArtem_Click(object sender, EventArgs e)
         {
-            #region prepare
+            Array.Clear(Ray_.Hz, 0, Ray_.Hz.Length);
+            Array.Resize(ref Ray_.Hz, Sr.Profile.Select(p => (double)p.z).ToArray().Length);
+                Ray_.Hz = Sr.Profile.Select(p => (double)p.z).ToArray();
 
-            double dummy = 0;
+            Array.Clear(Ray_.Cz, 0, Ray_.Cz.Length);
+            Array.Resize(ref Ray_.Cz, Sr.Profile.Select(p => (double)p.c).ToArray().Length);
+                Ray_.Cz = Sr.Profile.Select(p => (double)p.c).ToArray();
 
-            double dT;
-            double.TryParse(cbTR.Text, out dT);
-
-            Console.WriteLine(GraphPoints.Count);
-            Hobj = new double[GraphPoints.Count];
-            Lobj = new double[GraphPoints.Count];
-            Time = new double[GraphPoints.Count];
-
-            for (int i = 0; i < GraphPoints.Count; i++)
+            if (Ray_.PrepareVal())
             {
-                Hobj[i] = GraphPoints[i].Z;
-                Lobj[i] = Math.Sqrt(Math.Pow(GraphPoints[i].X, 2.0) + Math.Pow(GraphPoints[i].Y, 2.0));
-                Time[i] = i * dT;
-            }
+                #region prepare
 
-            // HACH:
-            /*
-            Array.Resize(ref Ray.Kz, Ray.Hz.Count - 1);
-            Array.Clear(Ray.Kz, 0, Ray.Kz.Length);
-            for (int i = 0; i < Ray.Kz.Length; i++)
-            {
-                if (Ray.Cz[i] == Ray.Cz[i + 1])
-                    Ray.Cz[i + 1] += 0.001;                                             // якщо швидкість стала, робимо коефіцієнт наближеним до нуля
-                Ray.Kz[i] = (Ray.Cz[i + 1] - Ray.Cz[i]) / (Ray.Hz[i + 1] - Ray.Hz[i]);  // обчислюємо коефіцієнти зміни швидкості звуку за глибиною
-            }
+                double dummy = 0;
 
-            Array.Resize(ref Ray.Yr, Ray.Kz.Length);
-            Array.Clear(Ray.Yr, 0, Ray.Yr.Length);
-            for (int i = 0; i < Ray.Yr.Length; i++)                                     // обчислюємо ординати центрів кіл для кожного водного шару
-                Ray.Yr[i] = Ray.Cz[i] / Ray.Kz[i] - Ray.Hz[i];
+                double dT;
+                double.TryParse(cbTR.Text, out dT);
 
-            GObject gObj = new GObject();
-            */
+                Console.WriteLine(GraphPoints.Count);
+                Hobj = new double[GraphPoints.Count];
+                Lobj = new double[GraphPoints.Count];
+                Time = new double[GraphPoints.Count];
 
-            List<double> timeRays = new List<double>();
-            List<double> ampRaysX = new List<double>();
-            List<double> ampRaysY = new List<double>();
-            List<double> ampRaysZ = new List<double>();
-
-            #endregion
-
-            for (int i = 0; i < GraphPoints.Count; i++)
-            {
-                List<double> timR = new List<double>();
-                List<double> ampR = new List<double>();
-                List<double> angR = new List<double>();
-                List<double> lngR = new List<double>();
-
-                // HACH: gObj.calcAmp(hobj[i], lobj[i], time[i], ampR, timR, angR, lngR);
-
-                for (int j = 0; j < timR.Count; j++)
+                for (int i = 0; i < GraphPoints.Count; i++)
                 {
-                    timeRays.Add(dT * Math.Round(timR[j] / dT) + Time[i]);
-
-                    dummy = ampR[j] * Math.Cos(angR[j]) * Math.Sin(2 * Math.PI * Sr.Frequency * timR[j]);
-
-                    ampRaysX.Add(dummy * GraphPoints[i].X / Lobj[i]);
-                    ampRaysY.Add(dummy * GraphPoints[i].Y / Hobj[i]);
-                    ampRaysZ.Add(ampR[j] * Math.Sin(angR[j]) * Math.Sin(2 * Math.PI * Sr.Frequency * timR[j]));
+                    Hobj[i] = GraphPoints[i].Z;
+                    Lobj[i] = Math.Sqrt(Math.Pow(GraphPoints[i].X, 2.0) + Math.Pow(GraphPoints[i].Y, 2.0));
+                    Time[i] = i * dT;
                 }
-            }
 
-            #region Graph
+                List<double> T = new List<double>();
+                List<double> X = new List<double>();
+                List<double> Y = new List<double>();
+                List<double> Z = new List<double>();
 
-            for (int minT = 0; minT < timeRays.Count - 1; minT++)
-            {
-                Console.WriteLine(string.Format("minT = {0}", minT));
-                for (int j = minT + 1; j < timeRays.Count; j++)
+                #endregion
+
+                double R = 0, xxx = 0;
+
+                double BgnAngl = 0, EndAngl = 0;
+
+
+                int j = 0;
+
+
+                S.Layer_000_090(65, // кут з прошарку в прошарок
+                    1,              // номер поточного точки водного прошарку
+                    out BgnAngl,    // початковий кут, перерахований по четвертям
+                    out EndAngl,    // кінцевий кут
+                    out xxx,        // центр кола
+                    out R,          // радіус кола
+
+                    out j);         // номер поточного точки водного прошарку
+
+                S.Layer_000_090(EndAngl,             // кут з прошарку в прошарок
+                    j,              // номер поточного точки водного прошарку
+                    out BgnAngl,    // початковий кут, перерахований по четвертям
+                    out EndAngl,    // кінцевий кут
+                    out xxx,        // центр кола
+                    out R,          // радіус кола
+
+                    out j);         // номер поточного точки водного прошарку
+
+                //S.Layer_000_090(40,             // кут з прошарку в прошарок
+                //    3,              // номер поточного точки водного прошарку
+                //    out BgnAngl,    // початковий кут, перерахований по четвертям
+                //    out EndAngl,    // кінцевий кут
+                //    out xxx,        // центр кола
+                //    out R,          // радіус кола
+
+                //    out j);         // номер поточного точки водного прошарку
+
+                for (int i = 0; i < GraphPoints.Count; i++)
                 {
-                    if (timeRays[minT] > timeRays[j])
-                    {
-                        double rT = timeRays[minT];
-                        timeRays[minT] = timeRays[j];
-                        timeRays[j] = rT;
-                        rT = ampRaysX[minT];
-                        ampRaysX[minT] = ampRaysX[j];
-                        ampRaysX[j] = rT;
-                        rT = ampRaysY[minT];
-                        ampRaysY[minT] = ampRaysY[j];
-                        ampRaysY[j] = rT;
-                        rT = ampRaysZ[minT];
-                        ampRaysZ[minT] = ampRaysZ[j];
-                        ampRaysZ[j] = rT;
-                    }
-                }
-            }
-            List<double> resTime = new List<double>();
-            List<double> resAmp = new List<double>();
-            for (int i = 0; i < timeRays.Count; i++)
-            {
-                Console.WriteLine(string.Format("timeRays = {0}", i));
-                if (i > 0 && timeRays[i - 1] == timeRays[i])
-                    continue;
-                double ampx = 0;
-                double ampy = 0;
-                double ampz = 0;
-                double numberTk = 0;
-                for (int k = i; k < timeRays.Count; k++)
-                {
-                    if (timeRays[k] == timeRays[i])
-                    {
-                        ampx += ampRaysX[k];
-                        ampy += ampRaysY[k];
-                        ampz += ampRaysZ[k];
-                        numberTk += 1.0;
-                    }
-                }
-                ampx /= numberTk;
-                ampy /= numberTk;
-                ampz /= numberTk;
-                double amp0 = Math.Sqrt(ampx * ampx + ampy * ampy + ampz * ampz);
-                resTime.Add(timeRays[i]);
-                resAmp.Add(amp0);
-            }
-            for (int i = 0; i < resTime.Count; i++)
-                chart1.Series[0].Points.AddXY(resTime[i], resAmp[i]);
+                    List<double> timR = new List<double>();
+                    List<double> ampR = new List<double>();
+                    List<double> angR = new List<double>();
+                    List<double> lngR = new List<double>();
 
-            #endregion
+                    // HACH: gObj.calcAmp(hobj[i], lobj[i], time[i], ampR, timR, angR, lngR);
 
+
+                    //for (int j = 0; j < timR.Count; j++)
+                    //{
+                    //    //timeRays.Add(dT * Math.Round(timR[j] / dT) + Time[i]);
+
+                    //    //dummy = ampR[j] * Math.Cos(angR[j]) * Math.Sin(2 * Math.PI * Sr.Frequency * timR[j]);
+
+                    //    //ampRaysX.Add(dummy * GraphPoints[i].X / Lobj[i]);
+                    //    //ampRaysY.Add(dummy * GraphPoints[i].Y / Hobj[i]);
+                    //    //ampRaysZ.Add(ampR[j] * Math.Sin(angR[j]) * Math.Sin(2 * Math.PI * Sr.Frequency * timR[j]));
+                    //}
+                }
+
+                #region Graph
+
+                //for (int minT = 0; minT < timeRays.Count - 1; minT++)
+                //{
+                //    Console.WriteLine(string.Format("minT = {0}", minT));
+                //    for (int j = minT + 1; j < timeRays.Count; j++)
+                //    {
+                //        if (timeRays[minT] > timeRays[j])
+                //        {
+                //            double rT = timeRays[minT];
+                //            timeRays[minT] = timeRays[j];
+                //            timeRays[j] = rT;
+                //            rT = ampRaysX[minT];
+                //            ampRaysX[minT] = ampRaysX[j];
+                //            ampRaysX[j] = rT;
+                //            rT = ampRaysY[minT];
+                //            ampRaysY[minT] = ampRaysY[j];
+                //            ampRaysY[j] = rT;
+                //            rT = ampRaysZ[minT];
+                //            ampRaysZ[minT] = ampRaysZ[j];
+                //            ampRaysZ[j] = rT;
+                //        }
+                //    }
+                //}
+                //List<double> resTime = new List<double>();
+                //List<double> resAmp = new List<double>();
+                //for (int i = 0; i < timeRays.Count; i++)
+                //{
+                //    Console.WriteLine(string.Format("timeRays = {0}", i));
+                //    if (i > 0 && timeRays[i - 1] == timeRays[i])
+                //        continue;
+                //    double ampx = 0;
+                //    double ampy = 0;
+                //    double ampz = 0;
+                //    double numberTk = 0;
+                //    for (int k = i; k < timeRays.Count; k++)
+                //    {
+                //        if (timeRays[k] == timeRays[i])
+                //        {
+                //            ampx += ampRaysX[k];
+                //            ampy += ampRaysY[k];
+                //            ampz += ampRaysZ[k];
+                //            numberTk += 1.0;
+                //        }
+                //    }
+                //    ampx /= numberTk;
+                //    ampy /= numberTk;
+                //    ampz /= numberTk;
+                //    double amp0 = Math.Sqrt(ampx * ampx + ampy * ampy + ampz * ampz);
+                //    resTime.Add(timeRays[i]);
+                //    resAmp.Add(amp0);
+                //}
+                //for (int i = 0; i < resTime.Count; i++)
+                //    chart1.Series[0].Points.AddXY(resTime[i], resAmp[i]);
+
+                #endregion
+            }
         }
 
         //
@@ -712,48 +738,7 @@ namespace RayModelApp
 
         private void btnMakePoints_Click(object sender, EventArgs e)
         {
-            Point4D p4d;
-            double dt, dx, dy, dz, px, py, pz;
-            double path, len, currentTime;
-            double.TryParse(cbTR.Text, out dt);
-            GraphPoints.Clear();
-            while (!queue.IsEmpty)
-                queue.TryDequeue(out p4d);
-            chart1.Series["sDist"].Points.Clear();
-            currentTime = 0;
-            for (int i = 0; i < Points.Count - 1; i++)
-            {
-                path = getDist(Points[i], Points[i + 1]);
-                px = Points[i + 1].X - Points[i].X;
-                py = Points[i + 1].Y - Points[i].Y;
-                pz = Points[i + 1].Z - Points[i].Z;
 
-                dx = Points[i].W * px / Math.Sqrt(px * px + py * py + pz * pz);
-                dy = Points[i].W * py / Math.Sqrt(px * px + py * py + pz * pz);
-                dz = Points[i].W * pz / Math.Sqrt(px * px + py * py + pz * pz);
-
-                px = Points[i].X;
-                py = Points[i].Y;
-                pz = Points[i].Z;
-                GraphPoints.Add(new Point3D() { X = px, Y = py, Z = pz });
-                queue.Enqueue(new Point4D() { X = px, Y = py, Z = pz, W = currentTime });
-                chart1.Series["sDist"].Points.Add(Math.Sqrt(px * px + py * py));
-                len = 0;
-                currentTime += dt;
-                do
-                {
-                    px += dt * dx;
-                    py += dt * dy;
-                    pz += dt * dz;
-                    Console.WriteLine(string.Format("{0} {1} {2}", px, py, pz));
-                    GraphPoints.Add(new Point3D() { X = px, Y = py, Z = pz });
-                    queue.Enqueue(new Point4D() { X = px, Y = py, Z = pz, W = currentTime });
-                    chart1.Series["sDist"].Points.Add(Math.Sqrt(px * px + py * py));
-                    len += dt;
-                    currentTime += dt;
-                } while (len < path / Points[i].W);
-            }
-            Console.WriteLine(GraphPoints.Count);
         }
 
         private double getDist(Point4D a, Point4D b)

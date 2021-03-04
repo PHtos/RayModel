@@ -13,10 +13,10 @@ namespace RayModelApp
 
         // вхідні дані
 
-        public static double[] Hz;              // вузлові точки глибин
-        public static double[] Cz;              // швидкість звуку по вузловим точкам глибин
-        public static double[] Kz;              // водні прошарки відповідно вузлових точок швидкості звуку
-        public static double[] Yr;              // ординати центрів кіл для кожного водного шару
+        public static double[] Hz = new double[1];  // вузлові точки глибин
+        public static double[] Cz = new double[1];  // швидкість звуку по вузловим точкам глибин
+        public static double[] Kz = new double[1];  // водні прошарки відповідно вузлових точок швидкості звуку
+        public static double[] Yr = new double[1];  // ординати центрів кіл для кожного водного шару
 
         public static int i0;                   // номер водного шару джерело звуку
         public static double Hobj;              // глибина 
@@ -41,6 +41,8 @@ namespace RayModelApp
 
         // параметри за замовченням
 
+        public static double Grd = 180.0 / Math.PI;
+
         public static double Ksrf = 0.9;        // коефіціент ослаблення при відбитті від поверхні моря
         public static double Kbtm = 0.7;        // коефіціент ослаблення при відбитті від дна моря
         public static double Kenv = 0.001;      // ослаблення амплітуди променів від пройденої відстані на 1 км
@@ -50,10 +52,8 @@ namespace RayModelApp
 
         // попередні обчислення додаткових 
 
-        public void PrepareVal()
+        public static bool PrepareVal()
         {
-            // UNDONE: except parameter
-
             #region Обчислення кількості відзеркалень
 
             NRefl = 0;
@@ -64,7 +64,8 @@ namespace RayModelApp
                 dummy *= dummy;
                 NRefl++;
             }
-            NRefl++;
+            if (NRefl++ == 1)
+                return false;
 
             #endregion
 
@@ -74,14 +75,23 @@ namespace RayModelApp
             Array.Resize(ref Kz, Hz.Length - 1);
 
             for (i1 = 0; i1 < Kz.Length; i1++)
-                Kz[i1] = (Cz[i1 + 1] - Cz[i1] + 0.001) / (Hz[i1 + 1] - Hz[i1]);
+                Kz[i1] = -(Cz[i1 + 1] - Cz[i1]) / (Hz[i1 + 1] - Hz[i1]);
 
-            #endregion 
+            if (Kz.Length == 0)
+                return false;
+
+            #endregion
 
             #region обчислюємо ординати центрів кіл для кожного водного шару
 
+            Array.Clear(Yr, 0, Yr.Length);
+            Array.Resize(ref Yr, Hz.Length - 1);
+
             for (i1 = 0; i1 < Kz.Length; i1++)
                 Yr[i1] = Cz[i1] / Kz[i1] - Hz[i1];
+
+            if (Yr.Length == 0)
+                return false;
 
             #endregion
 
@@ -94,6 +104,13 @@ namespace RayModelApp
             Cgas = Cz[i1] + Kz[i1] * (Hgas - Hz[i1]);       // швидкість звуку для глибини гідроакустичної станції
 
             #endregion
+
+            List_AmR.Clear();
+            List_AnR.Clear();
+            List_LnR.Clear();
+            List_TmR.Clear();
+
+            return true;
         }
 
         #endregion
@@ -156,48 +173,60 @@ namespace RayModelApp
             double R = 0, X = 0;
 
             double Angel = 0 + dAngel;
-            double BgnAngl, EndAngl;
+            double BgnAngl = 0, EndAngl = 0;
 
             double H = Hobj;
             double C = Cz[i0] + Kz[i0] * (Hobj - Hz[i0]);
 
-            int j, i = i0;
+            int j = 0, i = i0;
 
-            if (Hobj < Hz[Layer])
-                Angel = -1;
-            else
-            {
-                do
-                {
-                    BgnAngl = Angel * Math.PI / 180;
+            S.Layer_000_090(    40,             // кут з прошарку в прошарок
+                                2,              // номер поточного точки водного прошарку
+                                out BgnAngl,    // початковий кут, перерахований по четвертям
+                                out EndAngl,    // кінцевий кут
+                                out X,          // центр кола
+                                out R,          // радіус кола
 
-                    while (Lobj > L)
-                    {
-                        //S.Do_000_090(       BgnAngl,    // початковий кут
-                        //                    H,          // спочатку початкова глибина джерела звуку, потім вузлові точки по глибині
-                        //                    C,          // спочатку початкова швидкість звуку джерела, потім вузлові точки по глибині
-                        //                    i,          // номер поточного точки водного прошарку
-                        //    out BgnAngl,
-                        //    out EndAngl,    // кінцевий кут
-                        //    out X,          // радіус кола
-                        //    out R,          // центр кола 
-                        //    out j);         // номер поточного точки водного прошарку
+                                out j);         // номер поточного точки водного прошарку
 
-                        L++;
 
-                        // double lri = (Math.Abs(rFi * Math.Cos(eFi)) > Math.Abs(rFi * Math.Cos(bFi))) ? Math.Abs(rFi * (fi - bFi)) : Math.Abs(rFi * (fi - eFi));
 
-                        //i = j;
-                        //H = Hz[j];
-                        //C = Cz[j];
-                        //BgnAngl = EndAngl;
-                    }
 
-                    Angel += dAngel;
-                }
-                while (BgnAngl > 0)
-                ;
-            }
+            //if (Hobj < Hz[Layer])
+            //    Angel = -1;
+            //else
+            //{
+            //    do
+            //    {
+            //        BgnAngl = Angel * Math.PI / 180;
+
+            //        while (Lobj > L)
+            //        {
+            //            //S.Do_000_090(       BgnAngl,    // початковий кут
+            //            //                    H,          // спочатку початкова глибина джерела звуку, потім вузлові точки по глибині
+            //            //                    C,          // спочатку початкова швидкість звуку джерела, потім вузлові точки по глибині
+            //            //                    i,          // номер поточного точки водного прошарку
+            //            //    out BgnAngl,
+            //            //    out EndAngl,    // кінцевий кут
+            //            //    out X,          // радіус кола
+            //            //    out R,          // центр кола 
+            //            //    out j);         // номер поточного точки водного прошарку
+
+            //            L++;
+
+            //            // double lri = (Math.Abs(rFi * Math.Cos(eFi)) > Math.Abs(rFi * Math.Cos(bFi))) ? Math.Abs(rFi * (fi - bFi)) : Math.Abs(rFi * (fi - eFi));
+
+            //            //i = j;
+            //            //H = Hz[j];
+            //            //C = Cz[j];
+            //            //BgnAngl = EndAngl;
+            //        }
+
+            //        Angel += dAngel;
+            //    }
+            //    while (BgnAngl > 0)
+            //    ;
+            //}
         }
 
         public static void Str_090_180()
